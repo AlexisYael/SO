@@ -133,3 +133,5 @@ void up(int semid)
     struct sembuf op_p[] = {0, +1, 0};
     semop(semid, op_p, 1);
 }
+
+http://www.cartagena99.com/recursos/alumnos/apuntes/Tema04_Concurrencia.pdf
