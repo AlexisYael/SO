@@ -10,46 +10,37 @@ void up(int semid);
 int main()
 {
     int *espera = NULL;
-    int *actual = NULL;
-    int shmid, shmid2;
-    key_t key1 = crearKey("/tmp", 'm');
-    key_t key2 = crearKey("/tmp", 'o');
-    key_t key3 = crearKey("/tmp", 'p');
-    key_t key4 = crearKey("/tmp", 'q');
-    key_t key5 = crearKey("/tmp", 'r');
-    int clientes = crearSemaforo(key1, 1);
+    int shmid;
+    key_t key1 = crearKey("/tmp", 'a');
+    key_t key2 = crearKey("/tmp", 'b');
+    key_t key3 = crearKey("/tmp", 'c');
+    key_t key4 = crearKey("/tmp", 'd');
+    int cliente = crearSemaforo(key1, 1);
     int barbero = crearSemaforo(key2, 1);
     int mutex = crearSemaforo(key3, 1);
     shmid = crearMemoria(&espera, key4, 1);
-    shmid2 = crearMemoria(&actual, key5, 1);
+    *espera = 0;
     while (1)
     {
+        printf("LLego un nuevo cliente.\n");
         down(mutex);
-        if (*espera > 0 && *espera <= SILLAS)
+        if (*espera < SILLAS)
         {
+            if (*espera == 0)
+                printf("El cliente desperto al barbero.\n");
             *espera = *espera + 1;
-            printf("Entro cliente.\n");
-            up(clientes);
+            up(cliente);
             up(mutex);
-            if (*actual == 0)
-            {
-                *actual = 1;
-                down(barbero);
-                for (int i = 0; i < 5; i++)
-                {
-                    printf("Me estan cortando el cabello.\n");
-                    sleep(1);
-                }
-                *actual = 0;
-            }
-            else
-            {
-                printf("Espero mi turno.\n");
-                sleep(1);
-            }
+            down(barbero);
+            printf("Estoy recibiendo mi corte.\n");
+            sleep(2);
         }
         else
+        {
+            printf("El cliente se retira al noi haber espacio disponible.\n");
             up(mutex);
+        }
+        
     }
     return 0;
 }
